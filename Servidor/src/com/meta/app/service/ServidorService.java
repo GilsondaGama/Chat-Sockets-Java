@@ -70,39 +70,30 @@ public class ServidorService {
                 while ((message = (ChatMessage) input.readObject()) != null) {
                     Action action = message.getAction();
                                        
-                    if (action.equals(Action.CONNECT)) {    
-                           JOptionPane.showMessageDialog(null, message.getEmail()+" : "+message.getSenha());
-                                
-                                
+                    if (action.equals(Action.CONNECT)) {                                 
                         try {
                             conecta.executaSql("SELECT * FROM login WHERE email = '"+message.getEmail()+"'");
-                            conecta.rs.first();
-                            
-                            JOptionPane.showMessageDialog(null, conecta.rs.getString("email")+" | "+conecta.rs.getString("senha")+" | "+conecta.rs.getString("nome"));
-                                    
+                            conecta.rs.first();                                  
                                     
                             if (conecta.rs.getString("senha").equals(message.getSenha())) {
-                                message.setName(conecta.rs.getString("name"));
-                                
-                                JOptionPane.showMessageDialog(null, "Usuário encontrado:" + message.getName());   
-
-                                
+                                message.setName(conecta.rs.getString("nome"));
+                               
                                 boolean isConnect = connect(message, output);
                                 if (isConnect) {
                                     mapOnlines.put(message.getName(), output);
                                     sendOnlines();
                                 }                              
                             } else {
-                                JOptionPane.showMessageDialog(null, "Senha digitada errada!");  
+                                JOptionPane.showMessageDialog(null, "Usuário ou Senha não encontrados!");  
                             }
                             
                         } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(null, "Usuário não encontradado!"+ex);  
-                            //Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        
+                            JOptionPane.showMessageDialog(null, "Usuário ou Senha não encontrados!" +ex);                         
+                        }                        
                         
                     } else if (action.equals(Action.REGISTER)) {
+                        
+                        
                         boolean isConnect = connect(message, output);
                         if (isConnect) {
                             mapOnlines.put(message.getName(), output);
@@ -137,9 +128,8 @@ public class ServidorService {
         if (mapOnlines.size() == 0) {
             message.setText("YES");
             send(message, output);
-            return true;
         }
-
+/*        
         if (mapOnlines.containsKey(message.getName())) {
             message.setText("NO");
             send(message, output);
@@ -149,6 +139,9 @@ public class ServidorService {
             send(message, output);
             return true;
         }
+*/
+
+        return true;
     }
 
     private void disconnect(ChatMessage message, ObjectOutputStream output) {

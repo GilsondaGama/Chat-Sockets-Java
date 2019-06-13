@@ -49,7 +49,8 @@ public class ClienteFrame extends javax.swing.JFrame {
                     Action action = message.getAction();
 
                     if (action.equals(Action.CONNECT)) {
-                        connected(message);                           
+                        connected(message);   
+                        txtName.setText(message.getName());
                     } else if (action.equals(Action.REGISTER)) {
                         connected(message);
                     } else if (action.equals(Action.DISCONNECT)) {
@@ -72,35 +73,43 @@ public class ClienteFrame extends javax.swing.JFrame {
 
     private void connected(ChatMessage message) {
         if (message.getText().equals("NO")) {
-            this.txtName.setText("");
             JOptionPane.showMessageDialog(this, "Conexão não realizada!\nTente novamente com um novo nome.");
             return;
         }
 
-        this.message = message;
-        this.btnConnectar.setEnabled(false);
-        this.txtName.setEditable(false);
-
+        this.message = message;        
+       
+        this.btnLog.setEnabled(false);
+        this.btnCad.setEnabled(false);            
         this.btnSair.setEnabled(true);
-        this.txtAreaSend.setEnabled(true);
-        this.txtAreaReceive.setEnabled(true);
+        this.btnConnectar.setEnabled(false);
         this.btnEnviar.setEnabled(true);
         this.btnLimpar.setEnabled(true);
-
+        this.txtName.setEnabled(true);
+        this.txtAreaSend.setEnabled(true);
+        this.txtAreaReceive.setEnabled(true);
+        
+        this.txtAreaSend.requestFocus();
         JOptionPane.showMessageDialog(this, "Você está conectado no chat!");
     }
 
     private void disconnected() {
-
-        this.btnConnectar.setEnabled(true);
-        this.txtName.setEditable(true);
-
+        this.btnLog.setEnabled(true);
+        this.btnCad.setEnabled(true);            
         this.btnSair.setEnabled(false);
-        this.txtAreaSend.setEnabled(false);
-        this.txtAreaReceive.setEnabled(false);
+        this.btnConnectar.setEnabled(true);
         this.btnEnviar.setEnabled(false);
         this.btnLimpar.setEnabled(false);
+        this.txtName.setEnabled(false);           
+        this.txtAreaSend.setEnabled(false);
+        this.txtAreaReceive.setEnabled(false);
+
+        this.btnLog.setSelected(true);
+        this.btnCad.setSelected(false);
         
+        this.txtEmail.setText("");
+        this.txtSenha.setText("");
+        this.txtName.setText("");
         this.txtAreaReceive.setText("");
         this.txtAreaSend.setText("");
 
