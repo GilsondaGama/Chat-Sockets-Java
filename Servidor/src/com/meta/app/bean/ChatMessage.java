@@ -11,19 +11,56 @@ import java.util.Set;
 public class ChatMessage implements Serializable {
     
     private String name;
+    private String email;
+    private String senha;
+    private String ip;
+    private String porta;
+
     private String text;
     private String nameReserved;
     private Set<String> setOnlines = new HashSet<String>();
     private Action action;
-
+    
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }    
+   
+    public String getEmail() {
+        return email;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public String getPorta() {
+        return porta;
+    }
+
+    public void setPorta(String porta) {
+        this.porta = porta;
+    }
+    
     public String getText() {
         return text;
     }
@@ -57,6 +94,6 @@ public class ChatMessage implements Serializable {
     }
         
     public enum Action {
-        CONNECT, DISCONNECT, SEND_ONE, SEND_ALL, USERS_ONLINE
+        CONNECT, DISCONNECT, SEND_ONE, SEND_ALL, USERS_ONLINE, REGISTER
     }
 }

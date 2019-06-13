@@ -1,7 +1,7 @@
 package com.meta.app.service;
-
 import com.meta.app.bean.ChatMessage;
 import com.meta.app.bean.ChatMessage.Action;
+import com.meta.app.controle.ConexaoBD;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -9,25 +9,26 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 import sun.awt.windows.ThemeReader;
 
 /**
  * @author Gilson da Gama
  */
-public class ServidorService {
-
+public class ServidorService {   
     private ServerSocket serverSocket;
     private Socket socket;
     private Map<String, ObjectOutputStream> mapOnlines = new HashMap<String, ObjectOutputStream>();
 
-    public ServidorService() {
+    public ServidorService() {               
         try {
             serverSocket = new ServerSocket(5555);
 
@@ -42,6 +43,7 @@ public class ServidorService {
         } catch (IOException ex) {
             Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
 
     private class ListenerSocket implements Runnable {
@@ -60,17 +62,53 @@ public class ServidorService {
 
         @Override
         public void run() {
+            ConexaoBD conecta = new ConexaoBD();
+            conecta.conexao();
+            
             ChatMessage message = null;
             try {
                 while ((message = (ChatMessage) input.readObject()) != null) {
                     Action action = message.getAction();
+                                       
+                    if (action.equals(Action.CONNECT)) {    
+                           JOptionPane.showMessageDialog(null, message.getEmail()+" : "+message.getSenha());
+                                
+                                
+                        try {
+                            conecta.executaSql("SELECT * FROM login WHERE email = '"+message.getEmail()+"'");
+                            conecta.rs.first();
+                            
+                            JOptionPane.showMessageDialog(null, conecta.rs.getString("email")+" | "+conecta.rs.getString("senha")+" | "+conecta.rs.getString("nome"));
+                                    
+                                    
+                            if (conecta.rs.getString("senha").equals(message.getSenha())) {
+                                message.setName(conecta.rs.getString("name"));
+                                
+                                JOptionPane.showMessageDialog(null, "Usuário encontrado:" + message.getName());   
 
-                    if (action.equals(Action.CONNECT)) {
+                                
+                                boolean isConnect = connect(message, output);
+                                if (isConnect) {
+                                    mapOnlines.put(message.getName(), output);
+                                    sendOnlines();
+                                }                              
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Senha digitada errada!");  
+                            }
+                            
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(null, "Usuário não encontradado!"+ex);  
+                            //Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
+                        
+                    } else if (action.equals(Action.REGISTER)) {
                         boolean isConnect = connect(message, output);
                         if (isConnect) {
                             mapOnlines.put(message.getName(), output);
-                            sendOnlines();
+                            sendOnlines();                                                         
                         }
+ 
                     } else if (action.equals(Action.DISCONNECT)) {
                         disconnect(message, output);
                         sendOnlines();
@@ -78,7 +116,7 @@ public class ServidorService {
                     } else if (action.equals(Action.SEND_ONE)) {
                         sendOne(message);
                     } else if (action.equals(Action.SEND_ALL)) {
-                        sendAll(message);
+                        sendAll(message);                       
                     }
                 }
             } catch (IOException ex) {
@@ -90,10 +128,12 @@ public class ServidorService {
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+            
+            conecta.desconecta();
+        }        
     }
 
-    private boolean connect(ChatMessage message, ObjectOutputStream output) {
+    private boolean connect(ChatMessage message, ObjectOutputStream output) {                  
         if (mapOnlines.size() == 0) {
             message.setText("YES");
             send(message, output);
@@ -113,11 +153,8 @@ public class ServidorService {
 
     private void disconnect(ChatMessage message, ObjectOutputStream output) {
         mapOnlines.remove(message.getName());
-
         message.setText(" até logo!");
-
         message.setAction(Action.SEND_ONE);
-
         sendAll(message);
 
         System.out.println("User " + message.getName() + " sai da sala");

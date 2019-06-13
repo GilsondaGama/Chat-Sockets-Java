@@ -10,9 +10,25 @@ import java.util.Set;
  */
 public class ChatMessage implements Serializable {
     
+    private String name;
     private String email;
     private String senha;
+    private String ip;
+    private String porta;
 
+    private String text;
+    private String nameReserved;
+    private Set<String> setOnlines = new HashSet<String>();
+    private Action action;
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }    
+   
     public String getEmail() {
         return email;
     }
@@ -28,20 +44,23 @@ public class ChatMessage implements Serializable {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-    private String name;
-    private String text;
-    private String nameReserved;
-    private Set<String> setOnlines = new HashSet<String>();
-    private Action action;
 
-    public String getName() {
-        return name;
+    public String getIp() {
+        return ip;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
+    public String getPorta() {
+        return porta;
+    }
+
+    public void setPorta(String porta) {
+        this.porta = porta;
+    }
+    
     public String getText() {
         return text;
     }
