@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,14 +93,33 @@ public class ServidorService {
                         }                        
                         
                     } else if (action.equals(Action.REGISTER)) {
+
+                        try {
+                            conecta.executaSql("SELECT * FROM login WHERE email = '"+message.getEmail()+"'");
+                            if (conecta.rs.first()) {                                
+                                JOptionPane.showMessageDialog(null, "Usuário já cadastrado!");  
+                            } else {
+                                try {
+                                    PreparedStatement pst = conecta.con.prepareStatement("INSERT INTO login(email, senha, nome) VALUES (?, ?, ?)");
+                                    pst.setString(1, message.getEmail());
+                                    pst.setString(2, message.getSenha());
+                                    pst.setString(3, message.getName());
+                                    pst.execute();
+
+                                    JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso!");                         
+                                    boolean isConnect = connect(message, output);
+                                    if (isConnect) {
+                                        mapOnlines.put(message.getName(), output);
+                                        sendOnlines();                                    
+                                    }                              
+                                } catch (SQLException ex) {
+                                    JOptionPane.showMessageDialog(null, "Erro ao cadastrar!\n" +ex);                         
+                                }                                                                 
+                            }                              
+                        } catch (SQLException ex) {        
+                            JOptionPane.showMessageDialog(null, "Usuário já cadastrado!");        
+                        }                        
                         
-                        
-                        boolean isConnect = connect(message, output);
-                        if (isConnect) {
-                            mapOnlines.put(message.getName(), output);
-                            sendOnlines();                                                         
-                        }
- 
                     } else if (action.equals(Action.DISCONNECT)) {
                         disconnect(message, output);
                         sendOnlines();

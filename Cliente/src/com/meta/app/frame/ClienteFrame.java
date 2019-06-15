@@ -47,10 +47,6 @@ public class ClienteFrame extends javax.swing.JFrame {
             try {
                 while ((message = (ChatMessage) input.readObject()) != null) {
                     Action action = message.getAction();
-                    
-                    
- // JOptionPane.showMessageDialog(null, "Entrou em RUN com a Action: "+message.getAction());                        
- 
 
                     if (action.equals(Action.CONNECT)) {
                         connected(message);   
@@ -77,13 +73,6 @@ public class ClienteFrame extends javax.swing.JFrame {
     }
 
     private void connected(ChatMessage message) {  
-/*        
-        if (message.getText().equals("NO")) {
-            JOptionPane.showMessageDialog(this, "Conexão não realizada!\nTente novamente com um novo nome.");
-            return;
-        }
-*/
-
         this.message = message;        
        
         this.btnLog.setEnabled(false);
