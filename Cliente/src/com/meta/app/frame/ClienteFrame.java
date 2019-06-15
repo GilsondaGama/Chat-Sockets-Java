@@ -47,12 +47,17 @@ public class ClienteFrame extends javax.swing.JFrame {
             try {
                 while ((message = (ChatMessage) input.readObject()) != null) {
                     Action action = message.getAction();
+                    
+                    
+ // JOptionPane.showMessageDialog(null, "Entrou em RUN com a Action: "+message.getAction());                        
+ 
 
                     if (action.equals(Action.CONNECT)) {
                         connected(message);   
                         txtName.setText(message.getName());
                     } else if (action.equals(Action.REGISTER)) {
                         connected(message);
+                        txtName.setText(message.getName());                        
                     } else if (action.equals(Action.DISCONNECT)) {
                         disconnected();
                         socket.close();
@@ -71,11 +76,13 @@ public class ClienteFrame extends javax.swing.JFrame {
         }
     }
 
-    private void connected(ChatMessage message) {
+    private void connected(ChatMessage message) {  
+/*        
         if (message.getText().equals("NO")) {
             JOptionPane.showMessageDialog(this, "Conexão não realizada!\nTente novamente com um novo nome.");
             return;
         }
+*/
 
         this.message = message;        
        
@@ -118,6 +125,7 @@ public class ClienteFrame extends javax.swing.JFrame {
 
     private void receive(ChatMessage message) {
         this.txtAreaReceive.append(message.getName() + " diz: " + message.getText() + "\n");
+        this.txtAreaReceive.setCaretPosition(this.txtAreaReceive.getText().length());           
     }
 
     private void refreshOnlines(ChatMessage message) {
@@ -440,9 +448,7 @@ public class ClienteFrame extends javax.swing.JFrame {
         if (!text.isEmpty()) {
             this.message.setName(name);
             this.message.setText(text);
-
-            this.txtAreaReceive.append("Você disse: " + text + "\n");
-            
+            this.txtAreaReceive.append("Você disse: " + text + "\n");            
             this.service.send(this.message);
         }
         
@@ -462,21 +468,22 @@ public class ClienteFrame extends javax.swing.JFrame {
         String email = this.txtEmail.getText();
         String senha = new String(txtSenha.getPassword()).trim();
         String ip = this.txtIP.getText();
-        String porta = this.txtPorta.getText();
-        
-        if (btnLog.isSelected() && !email.isEmpty() && !senha.isEmpty()) {
+        String porta = this.txtPorta.getText(); 
+            
+        if (btnLog.isSelected() && !email.isEmpty() && !senha.isEmpty()) {              
             this.message = new ChatMessage();
-            this.message.setAction(Action.CONNECT);
+            this.message.setAction(Action.CONNECT);  
             this.message.setName(name);
             this.message.setEmail(email);
             this.message.setSenha(senha);
             this.message.setIp(ip);
             this.message.setPorta(porta);                      
-
-            this.service = new ClienteService();
+      
+            this.service = new ClienteService();           
             this.socket = this.service.connect(this.message);
-            new Thread(new ListenerSocket(this.socket)).start();
-            this.service.send(message);        
+            new Thread(new ListenerSocket(this.socket)).start();                        
+            this.service.send(message);                    
+            
         } else if (btnCad.isSelected() && !email.isEmpty() && !senha.isEmpty() && !name.isEmpty()) {
             this.message = new ChatMessage();
             this.message.setAction(Action.REGISTER);
@@ -489,10 +496,10 @@ public class ClienteFrame extends javax.swing.JFrame {
             this.service = new ClienteService();
             this.socket = this.service.connect(this.message);
             new Thread(new ListenerSocket(this.socket)).start();
-            this.service.send(message);                                                                        
+            this.service.send(message);    
         } else {
             JOptionPane.showMessageDialog(this, "Os campos devem ser preenchidos");           
-        }       
+        }          
     }//GEN-LAST:event_btnConnectarActionPerformed
 
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed

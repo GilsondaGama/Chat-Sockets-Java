@@ -81,7 +81,7 @@ public class ServidorService {
                                 boolean isConnect = connect(message, output);
                                 if (isConnect) {
                                     mapOnlines.put(message.getName(), output);
-                                    sendOnlines();
+                                    sendOnlines();                                    
                                 }                              
                             } else {
                                 JOptionPane.showMessageDialog(null, "Usuário ou Senha não encontrados!");  
@@ -122,14 +122,15 @@ public class ServidorService {
             
             conecta.desconecta();
         }        
-    }
+    }    
 
-    private boolean connect(ChatMessage message, ObjectOutputStream output) {                  
+    private boolean connect(ChatMessage message, ObjectOutputStream output) {
         if (mapOnlines.size() == 0) {
             message.setText("YES");
             send(message, output);
+            return true;
         }
-/*        
+
         if (mapOnlines.containsKey(message.getName())) {
             message.setText("NO");
             send(message, output);
@@ -139,9 +140,6 @@ public class ServidorService {
             send(message, output);
             return true;
         }
-*/
-
-        return true;
     }
 
     private void disconnect(ChatMessage message, ObjectOutputStream output) {
@@ -203,6 +201,6 @@ public class ServidorService {
             } catch (IOException ex) {
                 Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }   
     }
 }

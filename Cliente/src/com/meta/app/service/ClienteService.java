@@ -18,10 +18,10 @@ public class ClienteService {
     private Socket socket;
     private ObjectOutputStream output;
     
-    public Socket connect(ChatMessage message) {
+    public Socket connect(ChatMessage messageConect) {
         try {
 //          this.socket = new Socket("localhost", 5555);
-            this.socket = new Socket(message.getIp(), Integer.parseInt(message.getPorta()));           
+            this.socket = new Socket(messageConect.getIp(), Integer.parseInt(messageConect.getPorta()));           
             this.output = new ObjectOutputStream(socket.getOutputStream());
         } catch (UnknownHostException ex) {
             JOptionPane.showMessageDialog(null, "Servidor não encontrado.");                     
