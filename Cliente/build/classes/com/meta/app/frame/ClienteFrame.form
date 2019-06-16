@@ -253,7 +253,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="btnSair">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Sair"/>
+            <Property name="text" type="java.lang.String" value="Sair /  Salvar LOG"/>
             <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
@@ -262,7 +262,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="btnConnectar">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Connectar"/>
+            <Property name="text" type="java.lang.String" value="Conectar"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConnectarActionPerformed"/>

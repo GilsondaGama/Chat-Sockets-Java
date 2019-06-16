@@ -75,8 +75,8 @@ public class ClienteFrame extends javax.swing.JFrame {
         this.message = message;        
        
         this.btnLog.setEnabled(false);
-        this.btnCad.setEnabled(false);            
-        this.btnSair.setEnabled(true);
+        this.btnCad.setEnabled(false);      
+        this.btnSair.setEnabled(true);        
         this.btnConnectar.setEnabled(false);
         this.btnEnviar.setEnabled(true);
         this.btnLimpar.setEnabled(true);
@@ -90,8 +90,8 @@ public class ClienteFrame extends javax.swing.JFrame {
 
     private void disconnected() {
         this.btnLog.setEnabled(true);
-        this.btnCad.setEnabled(true);            
-        this.btnSair.setEnabled(false);
+        this.btnCad.setEnabled(true);
+        this.btnSair.setEnabled(false);        
         this.btnConnectar.setEnabled(true);
         this.btnEnviar.setEnabled(false);
         this.btnLimpar.setEnabled(false);
@@ -211,7 +211,7 @@ public class ClienteFrame extends javax.swing.JFrame {
 
         txtPorta.setText("5555");
 
-        btnSair.setText("Sair");
+        btnSair.setText("Sair /  Salvar LOG");
         btnSair.setEnabled(false);
         btnSair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -219,7 +219,7 @@ public class ClienteFrame extends javax.swing.JFrame {
             }
         });
 
-        btnConnectar.setText("Connectar");
+        btnConnectar.setText("Conectar");
         btnConnectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnConnectarActionPerformed(evt);
