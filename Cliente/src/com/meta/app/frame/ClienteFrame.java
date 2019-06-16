@@ -2,11 +2,10 @@ package com.meta.app.frame;
 
 import com.meta.app.bean.ChatMessage;
 import com.meta.app.bean.ChatMessage.Action;
+import com.meta.app.log.ArquivoLog;
 import com.meta.app.service.ClienteService;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Set;
 import java.util.logging.Level;
@@ -102,6 +101,9 @@ public class ClienteFrame extends javax.swing.JFrame {
 
         this.btnLog.setSelected(true);
         this.btnCad.setSelected(false);
+                
+        // Salvar LOG CLIENTE
+        new ArquivoLog(txtAreaReceive.getText(), txtIP.getText());        
         
         this.txtEmail.setText("");
         this.txtSenha.setText("");

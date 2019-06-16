@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Gilson
+ * @author Gilson da Gama
  */
 
 public class ConexaoBD {
