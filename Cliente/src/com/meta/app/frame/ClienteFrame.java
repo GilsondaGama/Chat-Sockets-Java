@@ -102,8 +102,8 @@ public class ClienteFrame extends javax.swing.JFrame {
         this.btnLog.setSelected(true);
         this.btnCad.setSelected(false);
                 
-        // Salvar LOG CLIENTE
-        new ArquivoLog(txtAreaReceive.getText(), txtIP.getText());        
+        //--------- Salvar LOG CLIENTE -------------//
+        new ArquivoLog(txtAreaReceive.getText(), txtIP.getText(), txtName.getText());        
         
         this.txtEmail.setText("");
         this.txtSenha.setText("");

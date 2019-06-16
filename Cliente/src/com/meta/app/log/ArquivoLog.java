@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
@@ -24,14 +23,14 @@ public class ArquivoLog {
     FileWriter fileWriter;
     BufferedWriter bufferedWriter;
     
-    public ArquivoLog(String logs, String ip) {
-        escreverLog(logs, ip);
+    public ArquivoLog(String logs, String ip, String nome) {
+        escreverLog(logs, ip, nome);
         
     }
     
-    private void escreverLog(String logs, String ip) {        
+    private void escreverLog(String logs, String ip, String nome) {        
         try {
-            arquivo = new File("Conversas-"+ip+".log");
+            arquivo = new File("Cliente-"+nome+" - IP-"+ip+".log");
             fileReader = new FileReader(arquivo);
             bufferedReader = new BufferedReader(fileReader);
             
@@ -51,7 +50,7 @@ public class ArquivoLog {
         } catch (FileNotFoundException ex) {
             try {
                 arquivo.createNewFile();
-                escreverLog(logs, ip);
+                escreverLog(logs, ip, nome);
                 
             } catch (IOException ex1) {
                 JOptionPane.showMessageDialog(null, "Erro ao gravar no arquivo de Logs.");
