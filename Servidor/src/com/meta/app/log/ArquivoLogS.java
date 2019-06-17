@@ -7,14 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
 import javax.swing.JOptionPane;
+
 
 /**
  *
  * @author Gilson da Gama
  */
-public class ArquivoLog {
+public class ArquivoLogS {
 
     File arquivo;
     FileReader fileReader;
@@ -22,14 +26,15 @@ public class ArquivoLog {
     FileWriter fileWriter;
     BufferedWriter bufferedWriter;
     
-    public ArquivoLog(String logs, String ip, String nome) {
-        escreverLog(logs, ip, nome);
+    public ArquivoLogS(String logs) {
+        escreverLog(logs);
         
     }
     
-    private void escreverLog(String logs, String ip, String nome) {        
-        try {
-            arquivo = new File("Cliente-"+nome+" - IP-"+ip+".log");
+    private void escreverLog(String logs) {    
+        try {  
+            arquivo = new File("Servidor-"+getDate().replaceAll("/", "-")+".log");
+            
             fileReader = new FileReader(arquivo);
             bufferedReader = new BufferedReader(fileReader);
             
@@ -49,7 +54,7 @@ public class ArquivoLog {
         } catch (FileNotFoundException ex) {
             try {
                 arquivo.createNewFile();
-                escreverLog(logs, ip, nome);
+                escreverLog(logs);
                 
             } catch (IOException ex1) {
                 JOptionPane.showMessageDialog(null, "Erro ao gravar no arquivo de Logs.");
@@ -61,5 +66,11 @@ public class ArquivoLog {
         }
                 
     }
+    
+    private String getDate() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+    return dateFormat.format(date);
+}    
     
 }

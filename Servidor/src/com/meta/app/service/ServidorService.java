@@ -1,9 +1,10 @@
 package com.meta.app.service;
+
 import com.meta.app.bean.ChatMessage;
 import com.meta.app.bean.ChatMessage.Action;
 import com.meta.app.controle.ConexaoBD;
+import com.meta.app.log.ArquivoLogS;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,6 +12,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,8 +21,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
-import sun.awt.windows.ThemeReader;
 
 /**
  * @author Gilson da Gama
@@ -27,17 +30,15 @@ import sun.awt.windows.ThemeReader;
 public class ServidorService {   
     private ServerSocket serverSocket;
     private Socket socket;
-    private Map<String, ObjectOutputStream> mapOnlines = new HashMap<String, ObjectOutputStream>();
+    private Map<String, ObjectOutputStream> mapOnlines = new HashMap<String, ObjectOutputStream>();    
 
     public ServidorService() {               
         try {
             serverSocket = new ServerSocket(5555);
-
             System.out.println("Servidor on!");
 
             while (true) {
                 socket = serverSocket.accept();
-
                 new Thread(new ListenerSocket(socket)).start();
             }
 
@@ -51,7 +52,9 @@ public class ServidorService {
 
         private ObjectOutputStream output;
         private ObjectInputStream input;
+        private JTextArea txtAreaLOG = new JTextArea();
 
+        
         public ListenerSocket(Socket socket) {
             try {
                 this.output = new ObjectOutputStream(socket.getOutputStream());
@@ -66,7 +69,7 @@ public class ServidorService {
             ConexaoBD conecta = new ConexaoBD();
             conecta.conexao();
             
-            ChatMessage message = null;
+            ChatMessage message = null;            
             try {
                 while ((message = (ChatMessage) input.readObject()) != null) {
                     Action action = message.getAction();
@@ -86,12 +89,11 @@ public class ServidorService {
                                 }                              
                             } else {
                                 JOptionPane.showMessageDialog(null, "Usuário ou Senha não encontrados!");  
-                            }
-                            
+                            }                            
                         } catch (SQLException ex) {
                             JOptionPane.showMessageDialog(null, "Usuário ou Senha não encontrados!" +ex);                         
-                        }                        
-                        
+                        }       
+ 
                     } else if (action.equals(Action.REGISTER)) {
 
                         try {
@@ -124,10 +126,28 @@ public class ServidorService {
                         disconnect(message, output);
                         sendOnlines();
                         return;
-                    } else if (action.equals(Action.SEND_ONE)) {
+                    } else if (action.equals(Action.SEND_ONE)) {                                               
                         sendOne(message);
+                        
+                        
+            //--------- Salvar Mensagem para LOG -------------//                        
+            txtAreaLOG.append("Nome: "+ message.getName() +"\n"+ "disse: " + message.getText() + "\n"+ "Em: "+ getAgora() +"\n\n");            
+            
+            //--------- Salvar LOG SERVIDOR -------------//                
+            new ArquivoLogS(txtAreaLOG.getText());             
+            this.txtAreaLOG.setText("");                         
+                        
+
                     } else if (action.equals(Action.SEND_ALL)) {
-                        sendAll(message);                       
+                        sendAll(message);   
+                        
+            //--------- Salvar Mensagem para LOG -------------//                        
+            txtAreaLOG.append("Nome: "+ message.getName() +"\n"+ "disse: " + message.getText() + "\n"+ "Em: "+ getAgora() +"\n\n");            
+            
+            //--------- Salvar LOG SERVIDOR -------------//                
+            new ArquivoLogS(txtAreaLOG.getText());             
+            this.txtAreaLOG.setText("");                           
+                                               
                     }
                 }
             } catch (IOException ex) {
@@ -174,12 +194,13 @@ public class ServidorService {
     private void send(ChatMessage message, ObjectOutputStream output) {
         try {
             output.writeObject(message);
+           
         } catch (IOException ex) {
             Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void sendOne(ChatMessage message) {
+    private void sendOne(ChatMessage message) {                       
         for (Map.Entry<String, ObjectOutputStream> kv : mapOnlines.entrySet()) {
             if (kv.getKey().equals(message.getNameReserved())) {
                 try {
@@ -188,7 +209,7 @@ public class ServidorService {
                     Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        }
+        }  
     }
 
     private void sendAll(ChatMessage message) {
@@ -223,4 +244,9 @@ public class ServidorService {
             }
         }   
     }
+    
+    private String getAgora() {
+            return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+    }    
+    
 }
