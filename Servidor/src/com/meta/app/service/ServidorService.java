@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -31,11 +34,17 @@ public class ServidorService {
     private ServerSocket serverSocket;
     private Socket socket;
     private Map<String, ObjectOutputStream> mapOnlines = new HashMap<String, ObjectOutputStream>();    
-
+       
+    //BackUp SERVIDOR
+    private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    
     public ServidorService() {               
         try {
             serverSocket = new ServerSocket(5555);
             System.out.println("Servidor on!");
+    
+            //BackUp SERVIDOR            
+            logScheduled();
 
             while (true) {
                 socket = serverSocket.accept();
@@ -44,15 +53,14 @@ public class ServidorService {
 
         } catch (IOException ex) {
             Logger.getLogger(ServidorService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        }        
     }
 
     private class ListenerSocket implements Runnable {
 
         private ObjectOutputStream output;
         private ObjectInputStream input;
-        private JTextArea txtAreaLOG = new JTextArea();
+        public JTextArea txtAreaLOG = new JTextArea();
 
         
         public ListenerSocket(Socket socket) {
@@ -127,27 +135,13 @@ public class ServidorService {
                         sendOnlines();
                         return;
                     } else if (action.equals(Action.SEND_ONE)) {                                               
-                        sendOne(message);
-                        
-                        
-            //--------- Salvar Mensagem para LOG -------------//                        
-            txtAreaLOG.append("Nome: "+ message.getName() +"\n"+ "disse: " + message.getText() + "\n"+ "Em: "+ getAgora() +"\n\n");            
-            
-            //--------- Salvar LOG SERVIDOR -------------//                
-            new ArquivoLogS(txtAreaLOG.getText());             
-            this.txtAreaLOG.setText("");                         
-                        
-
+                        sendOne(message);                        
+                        //--------- Adicionar Mensagem para LOG -------------//                        
+                        txtAreaLOG.append("Nome: "+ message.getName() +"\n"+ "disse: " + message.getText() + "\n"+ "Em: "+ getAgora() +"\n\n");                       
                     } else if (action.equals(Action.SEND_ALL)) {
-                        sendAll(message);   
-                        
-            //--------- Salvar Mensagem para LOG -------------//                        
-            txtAreaLOG.append("Nome: "+ message.getName() +"\n"+ "disse: " + message.getText() + "\n"+ "Em: "+ getAgora() +"\n\n");            
-            
-            //--------- Salvar LOG SERVIDOR -------------//                
-            new ArquivoLogS(txtAreaLOG.getText());             
-            this.txtAreaLOG.setText("");                           
-                                               
+                        sendAll(message);                           
+                        //--------- Adicionar Mensagem para LOG -------------//                        
+                        txtAreaLOG.append("Nome: "+ message.getName() +"\n"+ "disse: " + message.getText() + "\n"+ "Em: "+ getAgora() +"\n\n");                                                           
                     }
                 }
             } catch (IOException ex) {
@@ -163,6 +157,23 @@ public class ServidorService {
             conecta.desconecta();
         }        
     }    
+    
+    //BackUp SERVIDOR
+    private static void logScheduled() {
+        final Runnable loger = new Runnable() {
+            @Override
+            public void run() {
+                //System.out.println(new SimpleDateFormat("HH:mm:ss").format(new Date()) + " beep");
+                
+                //--------- Salvar LOG SERVIDOR -------------//                
+                new ArquivoLogS("Teste de Backup de LOG");             
+                //new ArquivoLogS(txtAreaLOG.getText());             
+                //this.txtAreaLOG.setText("");   
+            }
+        };
+        scheduledExecutorService.scheduleAtFixedRate(loger, 1, 9, TimeUnit.SECONDS);
+    }    
+    
 
     private boolean connect(ChatMessage message, ObjectOutputStream output) {
         if (mapOnlines.size() == 0) {
@@ -247,6 +258,6 @@ public class ServidorService {
     
     private String getAgora() {
             return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
-    }    
-    
+    }      
+   
 }
